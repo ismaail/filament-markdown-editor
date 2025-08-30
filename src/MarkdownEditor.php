@@ -2,30 +2,17 @@
 
 namespace Spatie\FilamentMarkdownEditor;
 
-use Closure;
 use Filament\Forms\Components\Concerns;
-use Filament\Forms\Components\Contracts;
+use Filament\Support\Concerns\HasExtraAlpineAttributes;
 use Filament\Forms\Components\Field;
 
-class MarkdownEditor extends Field implements Contracts\HasFileAttachments
+class MarkdownEditor extends Field
 {
-    use Concerns\HasFileAttachments;
+    use Concerns\CanBeLengthConstrained;
+    use Concerns\HasExtraInputAttributes;
     use Concerns\HasPlaceholder;
     use Concerns\InteractsWithToolbarButtons;
+    use HasExtraAlpineAttributes;
 
     protected string $view = 'filament-markdown-editor::markdownField';
-
-    protected array|Closure $toolbarButtons = [
-        'heading',
-        'bold',
-        'italic',
-        'link',
-        'quote',
-        'unordered-list',
-        'ordered-list',
-        'table',
-        'upload-image',
-        'undo',
-        'redo',
-    ];
 }
