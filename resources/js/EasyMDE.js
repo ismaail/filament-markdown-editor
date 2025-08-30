@@ -5,6 +5,10 @@
  * Probably won't be needed when https://github.com/Ionaru/easy-markdown-editor/pull/263 is ever merged
  */
 
+var marked = require('marked').marked;
+
+require('codemirror/mode/markdown/markdown.js');
+
 // Some variables
 var isMac = /Mac/.test(navigator.platform);
 var anchorToExternalRegex = new RegExp(/(<a.*?https?:\/\/.*?[^a]>)+?/g);
