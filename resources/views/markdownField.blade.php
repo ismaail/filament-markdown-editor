@@ -29,48 +29,26 @@
                         defaultValue: ''
                     }],
                     toolbar: [
-                    @if($hasToolbarButton('heading'))
-                        'heading',
-                    @endif
-                    @if($hasToolbarButton('bold'))
-                        'bold',
-                    @endif
-                    @if($hasToolbarButton('italic'))
-                        'italic',
-                    @endif
-                    @if($hasToolbarButton('link'))
-                        'link',
-                    @endif
-                    @if($hasToolbarButton('quote'))
-                        'quote',
-                    @endif
-                    @if($hasToolbarButton('unordered-list'))
-                        'unordered-list',
-                    @endif
-                    @if($hasToolbarButton('ordered-list'))
-                        'ordered-list',
-                    @endif
-                    @if($hasToolbarButton('table'))
-                        'table',
-                    @endif
-                    @if($hasToolbarButton('upload-image'))
-                        {
-                            name: 'upload-image',
-                            action: EasyMDE.drawUploadedImage,
-                            className: 'fa fa-image',
-                        },
-                    @endif
-                    @if($hasToolbarButton('undo'))
-                        'undo',
-                    @endif
-                    @if($hasToolbarButton('redo'))
-                        { // When FontAwesome is not auto downloaded, this loads the correct icon
-                            name: 'redo',
-                            action: EasyMDE.redo,
-                            className: 'fa fa-redo',
-                            title: 'Redo',
-                        },
-                    @endif
+                        @foreach($getToolbarButtons() as $buttons)
+                            @foreach($buttons as $button)
+                                @if ('upload-image' === $button) {
+                                    name: 'upload-image',
+                                    action: EasyMDE.drawUploadedImage,
+                                    className: 'fa fa-image',
+                                },
+                                @elseif ('redo' === $button) {
+                                    // When FontAwesome is not auto downloaded, this loads the correct icon
+                                    name: 'redo',
+                                    action: EasyMDE.redo,
+                                    className: 'fa fa-redo',
+                                    title: 'Redo',
+                                },
+                                @else
+                                    '{{ $button }}',
+                                @endif
+                            @endforeach
+                            '|',
+                        @endforeach
                     ],
                     imageAccept: 'image/png, image/jpeg, image/gif, image/avif',
                     imageUploadFunction: function(file, onSuccess, onError) {
