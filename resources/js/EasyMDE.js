@@ -184,7 +184,8 @@ function createToolbarButton(options, enableActions, enableTooltips, shortcuts, 
         }
     }
 
-    el.className = options.name;
+    var classNamePrefix = parent.options.toolbarButtonClassPrefix ? parent.options.toolbarButtonClassPrefix + '-' : '';
+    el.className = classNamePrefix + options.name;
     el.setAttribute('type', markup);
     enableTooltips = (enableTooltips == undefined) ? true : enableTooltips;
 
@@ -1859,6 +1860,7 @@ function EasyMDE(options) {
     options.imagePathAbsolute = options.imagePathAbsolute || false;
     options.imageCSRFName = options.imageCSRFName || 'csrfmiddlewaretoken';
     options.imageCSRFHeader = options.imageCSRFHeader || false;
+    options.imageInputName = options.imageInputName || 'image';
 
 
     // Change unique_id to uniqueId for backwards compatibility
@@ -2033,7 +2035,7 @@ EasyMDE.prototype.markdown = function (text) {
         }
 
         // Set options
-        marked.setOptions(markedOptions);
+        marked.use(markedOptions);
 
         // Convert the markdown to HTML
         var htmlText = marked.parse(text);
@@ -2144,8 +2146,6 @@ EasyMDE.prototype.render = function (el) {
         };
     }
 
-    CodeMirror.getMode('php').mime = 'text/x-php';
-
     this.codemirror = CodeMirror.fromTextArea(el, {
         mode: mode,
         backdrop: backdrop,
@@ -2223,8 +2223,9 @@ EasyMDE.prototype.render = function (el) {
 
 
     function assignImageBlockAttributes(parentEl, img) {
-        parentEl.setAttribute('data-img-src', img.url);
-        parentEl.setAttribute('style', '--bg-image:url(' + img.url + ');--width:' + img.naturalWidth + 'px;--height:' + calcHeight(img.naturalWidth, img.naturalHeight));
+        var url = (new URL(img.url, document.baseURI)).href;
+        parentEl.setAttribute('data-img-src', url);
+        parentEl.setAttribute('style', '--bg-image:url(' + url + ');--width:' + img.naturalWidth + 'px;--height:' + calcHeight(img.naturalWidth, img.naturalHeight));
         _vm.codemirror.setSize();
     }
 
@@ -2240,7 +2241,7 @@ EasyMDE.prototype.render = function (el) {
                 return;
             }
             if (!parentEl.hasAttribute('data-img-src')) {
-                var srcAttr = parentEl.innerText.match('\\((.*)\\)'); // might require better parsing according to markdown spec
+                var srcAttr = parentEl.innerText.match(/!\[.*?\]\((.*?)\)/); // might require better parsing according to markdown spec
                 if (!window.EMDEimagesCache) {
                     window.EMDEimagesCache = {};
                 }
@@ -2257,6 +2258,7 @@ EasyMDE.prototype.render = function (el) {
                     }
 
                     if (!window.EMDEimagesCache[keySrc]) {
+                        window.EMDEimagesCache[keySrc] = {};
                         var img = document.createElement('img');
                         img.onload = function () {
                             window.EMDEimagesCache[keySrc] = {
@@ -2680,7 +2682,7 @@ EasyMDE.prototype.createToolbar = function (items) {
                 imageInput.className = 'imageInput';
                 imageInput.type = 'file';
                 imageInput.multiple = true;
-                imageInput.name = 'image';
+                imageInput.name = self.options.imageInputName;
                 imageInput.accept = self.options.imageAccept;
                 imageInput.style.display = 'none';
                 imageInput.style.opacity = 0;
